@@ -1,13 +1,10 @@
-I had to reinstall all my tools on a new Mac, and I took the opportunity to do things in ways
-that allow more productivity. Hopefully, I would also avoid situations where things break with future
-software installs or updates.
+# Software package management on Mac with Homebrew and Cask
 
-Here are my quick notes on the process. In part 1, I am covering the first requirements to get running for some of my development tasks: *Git*, *Ruby*, and the OS X package manager *Homebrew*. Part 2 will be dedicated to *Python*, which I use a lot.  
-
-Actually, Git and Ruby were already installed on that system, OS X El Capitan, so I had less to do.
-The only additional requirement was *XCode*, which was easy to install, so I will skip that part.
+As a minimum requirement, we have to make sure *XCode* is installed.
 
 ## Homebrew
+
+Ruby is already installed on OS X El Capitan.
 
 Following the recommended installation method, using the Ruby command
 `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`,
