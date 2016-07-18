@@ -3,24 +3,25 @@
 
 ## Installation
 
-See https://www.terraform.io/intro/getting-started/install.html
+For details, see https://www.terraform.io/intro/getting-started/install.html.
 
 ## Building an AWS EC2 instance
 
 Before, read the following documentation to better understand your AWS services and account details:
 
-http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/default-vpc.html
-https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html
+* http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/default-vpc.html
+* https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html
 
-1) Write the configuration to launch the EC2 instance: ,
+1) Write the configuration to launch the EC2 instance ("t2.micro" in this case):
 
-To get started, in my case, I had to get the following info via the AWS management console:
+If needed, get the following info via the AWS management console or AWSCLI:
 
-- The region that was currently defined for my account: us-west-2,
-- The name of an available AMI for Linux to use: ami-7172b611.
+* The region that was currently defined for my account: us-west-2,
+* The name of an available AMI for Linux to use (Ubuntu): ami-7172b611.
   
 Then add an example.tf file, using these details:
 
+```
 provider "aws" {
   access_key = "ACCESS_KEY_HERE"
   secret_key = "SECRET_KEY_HERE"
@@ -31,19 +32,14 @@ resource "aws_instance" "example" {
   ami           = "ami-7172b611"
   instance_type = "t2.micro"
 }
+```
 
-Explanation:
+A provider, in this case AWS, is responsible for creating and managing resources. See https://www.terraform.io/docs/providers/ for more information.
 
-The provider block is used to configure the named provider, in our case "aws." 
-A provider is responsible for creating and managing resources. 
-
-See https://www.terraform.io/docs/providers/
-
-The resource block defines a resource that exists within the infrastructure. 
-A resource might be a physical component such as an EC2 instance, or it can be a logical resource 
-such as a Heroku application.
-
-For our EC2 instance, we specify an AMI for Ubuntu, and request a "t2.micro" instance so we qualify under the free tier.
+The resource block defines a resource that exists within the infrastructure. It can be:
+* A physical component such as an EC2 instance,
+* An Heroku application,
+* ...
 
 2) The Terraform execution plan:
 
@@ -76,11 +72,13 @@ $ terraform plan
 
 ```
 
-"terraform plan" shows what changes Terraform will apply to your infrastructure given the current state of your infrastructure as well as the current contents of your configuration.
+"terraform plan" shows what changes Terraform will apply to your infrastructure given the current state of your 
+infrastructure as well as the current contents of your configuration.
 
 
 3) Applying the configuration:
 
+```
 $ terraform apply
 
 aws_instance.example: Creating...
@@ -114,14 +112,17 @@ infrastructure, so keep it safe. To inspect the complete state
 use the `terraform show` command.
 
 State path: terraform.tfstate
+```
 
+Done!
 
-Done! You can go to the AWS console to prove to yourself that the EC2 instance has been created.
+Terraform also put some state into the terraform.tfstate file by default. 
+This state file maps various resource metadata to actual resource IDs so that Terraform knows what it is managing. 
+It must be saved and distributed to anyone who might run Terraform. Put it into version control!
 
-Terraform also put some state into the terraform.tfstate file by default. This state file is extremely important; it maps various resource metadata to actual resource IDs so that Terraform knows what it is managing. This file must be saved and distributed to anyone who might run Terraform. We recommend simply putting it into version control, since it generally isn't too large.
+You can inspect the state using "terraform show":
 
-You can inspect the state using terraform show:
-
+```
 aws_instance.example:
   id = i-34c0799b
   ami = ami-7172b611
@@ -151,7 +152,7 @@ aws_instance.example:
   tenancy = default
   vpc_security_group_ids.# = 1
   vpc_security_group_ids.824438014 = sg-a23988c4
-
+```
 
 ### Changing infrastructure
 
@@ -184,8 +185,9 @@ Note: You didn't specify an "-out" parameter to save this plan, so when
 
 To destroy the infrastructure:
 
+```
 $ terraform destroy
-
+```
 
 
 
