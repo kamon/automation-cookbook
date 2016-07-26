@@ -1,0 +1,9 @@
+
+# Sphinx documentation
+docs/_build/
+
+#Ipython Notebook
+.ipynb_checkpoints
+
+# Mac stuff
+.DS_Store

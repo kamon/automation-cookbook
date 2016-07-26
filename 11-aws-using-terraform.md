@@ -5,14 +5,22 @@
 
 For details, see https://www.terraform.io/intro/getting-started/install.html.
 
-## Building an AWS EC2 instance
+## Launch an AWS EC2 instance
 
-Before, read the following documentation to better understand your AWS services and account details:
+As a prerequisite, read the following documentation to better understand your AWS services and account details:
 
 * http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/default-vpc.html
 * https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html
 
-1) Write the configuration to launch the EC2 instance ("t2.micro" in this case):
+With Terraform, you do things in 3 steps:
+
+* 1. Write the configuration needed.
+* 2. Run the *execution plan*.
+* 3. *Apply the configuration*.
+
+### Write the configuration needed to launch the instance
+
+In this scenario, we will use an "t2.micro" EC2 instance.
 
 If needed, get the following info via the AWS management console or AWSCLI:
 
@@ -34,16 +42,16 @@ resource "aws_instance" "example" {
 }
 ```
 
-A provider, in this case AWS, is responsible for creating and managing resources. See https://www.terraform.io/docs/providers/ for more information.
+A provider, in this case *AWS*, is responsible for creating and managing resources. See https://www.terraform.io/docs/providers/ for more information.
 
 The resource block defines a resource that exists within the infrastructure. It can be:
 * A physical component such as an EC2 instance,
 * An Heroku application,
 * ...
 
-2) The Terraform execution plan:
+### Run the Terraform execution plan
 
-In the same directory as the example.tf file you created, run "terraform plan".
+In the same directory as the *example.tf* file, we will use the "terraform plan" command.
 
 ```
 $ terraform plan
@@ -72,11 +80,11 @@ $ terraform plan
 
 ```
 
-"terraform plan" shows what changes Terraform will apply to your infrastructure given the current state of your 
+This command shows the changes Terraform will apply to your infrastructure given the current state of your 
 infrastructure as well as the current contents of your configuration.
 
 
-3) Applying the configuration:
+### Apply the configuration
 
 ```
 $ terraform apply
@@ -154,22 +162,22 @@ aws_instance.example:
   vpc_security_group_ids.824438014 = sg-a23988c4
 ```
 
-### Changing infrastructure
+## Changing infrastructure
 
 TODO...
 
 
-### Destroying infrastructure
+## Destroying infrastructure
 
 Destroying your infrastructure is a rare event in production environments. But if you're using Terraform 
 to spin up multiple environments such as development, test, QA environments, then destroying is a useful action.
 
 Before destroying our infrastructure, we can use the plan command to see what resources Terraform will destroy.
 
-$ terraform plan -destroy
- 
 ```
-aws_instance.example: Refreshing state... (ID: i-34c0799b)
+$ terraform plan -destroy
+
+aws_instance.example: Refreshing state...
 
 The Terraform execution plan has been generated and is shown below.
 Resources are shown in alphabetical order for quick scanning. Green resources
@@ -189,9 +197,78 @@ To destroy the infrastructure:
 $ terraform destroy
 ```
 
+## Launch an AWS EC2 instance with an Elastic IP
+
+See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html
+
+Change the example.tf file to:
+
+```
+provider "aws" {
+  access_key = "ACCESS_KEY_HERE"
+  secret_key = "SECRET_KEY_HERE"
+  region     = "us-west-2"
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-7172b611"
+  instance_type = "t2.micro"
+}
+
+resource "aws_eip" "ip" {
+    instance = "${aws_instance.example.id}"
+}
+```
+
+Then, plan:
+
+```
+$ terraform plan
+
++ aws_eip.ip
+    allocation_id:     "" => "<computed>"
+    association_id:    "" => "<computed>"
+    domain:            "" => "<computed>"
+    instance:          "" => "${aws_instance.example.id}"
+    network_interface: "" => "<computed>"
+    private_ip:        "" => "<computed>"
+    public_ip:         "" => "<computed>"
+
++ aws_instance.example
+    ami:                      "" => "ami-7172b611"
+    availability_zone:        "" => "<computed>"
+    ebs_block_device.#:       "" => "<computed>"
+    ephemeral_block_device.#: "" => "<computed>"
+    instance_state:           "" => "<computed>"
+    instance_type:            "" => "t2.micro"
+    key_name:                 "" => "<computed>"
+    placement_group:          "" => "<computed>"
+    private_dns:              "" => "<computed>"
+    private_ip:               "" => "<computed>"
+    public_dns:               "" => "<computed>"
+    public_ip:                "" => "<computed>"
+    root_block_device.#:      "" => "<computed>"
+    security_groups.#:        "" => "<computed>"
+    source_dest_check:        "" => "true"
+    subnet_id:                "" => "<computed>"
+    tenancy:                  "" => "<computed>"
+    vpc_security_group_ids.#: "" => "<computed>"
 
 
+Plan: 2 to add, 0 to change, 0 to destroy.
+```
 
+Apply the new configuration:
 
+```
+$ terraform apply
+...
+```
+
+From the documentation, about dependencies:
+```
+Most dependencies in Terraform are implicit: Terraform is able to infer dependencies based on usage of attributes 
+of other resources.
+```
 
 
