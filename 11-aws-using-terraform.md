@@ -162,6 +162,81 @@ aws_instance.example:
   vpc_security_group_ids.824438014 = sg-a23988c4
 ```
 
+## Launch an AWS EC2 instance - Using variables
+
+* Let's start with the configuration.
+
+Modify the configuration file to use variables:
+
+```
+provider "aws" {
+    access_key = "${var.access_key}"
+    secret_key = "${var.secret_key}"
+    region     = "${var.region}" 
+}
+
+resource "aws_instance" "example" {
+  ami           = "ami-7172b611"
+  instance_type = "t2.micro"
+}
+```
+
+Create a new file called *variables.tf* to set the variables:
+
+```
+variable "region" {
+    type = "string"
+
+    default = "us-west-2"
+}
+
+variable "access_key" {
+    type = "string"
+
+    default = "foo"
+}
+
+variable "secret_key" {
+    type = "string"
+
+    default = "bar"
+}
+
+```
+
+* Run the execution plan as usual.
+
+* Finally, apply:
+
+```
+$ terraform apply
+aws_instance.example: Creating...
+  ami:                      "" => "ami-7172b611"
+  availability_zone:        "" => "<computed>"
+  ebs_block_device.#:       "" => "<computed>"
+  ephemeral_block_device.#: "" => "<computed>"
+  instance_state:           "" => "<computed>"
+  instance_type:            "" => "t2.micro"
+  key_name:                 "" => "<computed>"
+  placement_group:          "" => "<computed>"
+  private_dns:              "" => "<computed>"
+  private_ip:               "" => "<computed>"
+  public_dns:               "" => "<computed>"
+  public_ip:                "" => "<computed>"
+  root_block_device.#:      "" => "<computed>"
+  security_groups.#:        "" => "<computed>"
+  source_dest_check:        "" => "true"
+  subnet_id:                "" => "<computed>"
+  tenancy:                  "" => "<computed>"
+  vpc_security_group_ids.#: "" => "<computed>"
+aws_instance.example: Still creating... (10s elapsed)
+aws_instance.example: Still creating... (20s elapsed)
+aws_instance.example: Creation complete
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+...
+```
+
 ## Changing infrastructure
 
 TODO...
